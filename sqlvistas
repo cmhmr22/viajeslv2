@@ -1,0 +1,19 @@
+
+//crea una vista de las ventas actuales, incluyendo los ultimos 7dias 
+CREATE VIEW view_ventas_Actuales AS
+SELECT ventas.id, ventas.idUsuario, ventas.idCliente, ventas.idViaje, ventas.status, ventas.created_at, ventas.numeroPersonas, ventas.subTotal, ventas.descuento,ventas.folio, ventas.totalPagar, ventas.restanActualmente, viajes.destino FROM viajes,ventas WHERE viajes.fechaSalida > DATE_SUB(CURDATE(), INTERVAL 7 DAY) AND viajes.id = ventas.idViaje;
+
+
+CREATE VIEW ultimos_viajes AS
+select `viajes`.`id` AS `id`,`viajes`.`destino` AS `destino`,`viajes`.`horaSalida` AS `horaSalida`,`viajes`.`fechaSalida` AS `fechaSalida`,`viajes`.`horaRegreso` AS `horaRegreso`,`viajes`.`fechaRegreso` AS `fechaRegreso`,`viajes`.`asientosDisponibles` AS `asientosDisponibles`,`viajes`.`descripcion` AS `descripcion`,`viajes`.`status` AS `status`,`viajes`.`created_at` AS `created_at`,`viajes`.`updated_at` AS `updated_at`,`viajes`.`idUsuario` AS `idUsuario` from `viajes` where ((`viajes`.`status` <> 0) and (`viajes`.`fechaSalida` > (curdate() - interval 5 day))) order by `viajes`.`fechaSalida` desc
+
+
+
+//// viajes realizados, esta vista tiene el fin de cambiar los viajes que se hayan realizado
+
+CREATE VIEW lista_viajes_realizados AS SELECT * FROM `viajes` WHERE viajes.fechaSalida < DATE_SUB(CURDATE(), INTERVAL 1 DAY) AND viajes.status <> 0
+
+////////////////
+
+
+CREATE view contrato_usuario_estadisticas as SELECT viajes.id as idV, ventas.id as idVen, ventas.numeroPersonas, ventas.totalPagar, ventas.idCliente, ventas.idUsuario, ventas.idViaje, ventas.status AS statusVentas, ventas.restanActualmente, viajes.destino, viajes.fechaSalida, viajes.horaSalida, viajes.status as statusViajes, ventas.created_at, ventas.updated_at FROM ventas, viajes WHERE ventas.idViaje = viajes.id AND viajes.fechaSalida >= DATE_SUB(CURDATE(), INTERVAL 30 DAY) ORDER BY viajes.fechaSalida DESC
